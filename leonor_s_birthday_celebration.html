@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Leonor! 💖</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        roseGold: '#B76E79',
+                        deepRose: '#881337',
+                        blushPink: '#FFE4E6',
+                        softPink: '#FFF1F2',
+                        goldAccent: '#D4AF37'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        cursive: ['Alex Brush', 'cursive'],
+                        handwriting: ['Dancing Script', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Floating background elements */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        .animate-float {
+            animation: float 5s ease-in-out infinite;
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF1F2;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FDA4AF;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F43F5E;
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(244, 63, 94, 0.15);
+        }
+
+        /* Wax Seal & Envelope CSS */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+        .envelope {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease-in-out;
+        }
+        .envelope-flap {
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+        }
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        /* Polaroid Hover Effects */
+        .polaroid {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .polaroid:hover {
+            transform: translateY(-10px) rotate(0deg) scale(1.03) !important;
+            box-shadow: 0 20px 25px -5px rgba(225, 29, 72, 0.25), 0 8px 10px -6px rgba(225, 29, 72, 0.1);
+            z-index: 30;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-softPink via-blushPink/30 to-rose-100 text-slate-800 antialiased relative min-h-screen overflow-x-hidden">
+
+    <!-- Floating Background Particles Canvas -->
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Navigation Header -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass-card px-4 py-3 border-b border-rose-200/50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">💖</span>
+                <span class="font-serif font-bold text-rose-800 text-lg sm:text-xl tracking-wide">Leonor & Me</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Audio Toggle Button -->
+                <button id="audioBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 text-xs sm:text-sm font-medium flex items-center gap-2 transition">
+                    <i id="audioIcon" class="fa-solid fa-music"></i>
+                    <span id="audioText" class="hidden sm:inline">Play Melody</span>
+                </button>
+                <a href="#love-letter" class="px-3 py-1.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-medium shadow-md transition hover:scale-105">
+                    Read Letter
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="relative z-10 pt-24 pb-16 px-4 max-w-6xl mx-auto space-y-16 sm:space-y-24">
+
+        <!-- HERO SHOWCASE SECTION -->
+        <section class="text-center relative py-8 sm:py-12 flex flex-col items-center justify-center">
+            <!-- Dynamic Celebration Status Badge -->
+            <div id="celebrationBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-100 border border-rose-300 text-rose-700 font-semibold text-xs sm:text-sm mb-6 animate-pulse shadow-sm">
+                <i class="fa-solid fa-sparkles text-amber-500"></i>
+                <span id="badgeText">Counting down to Leonor's Special Day! 🎈</span>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                Happy Birthday, <br class="sm:hidden"/>
+                <span class="bg-gradient-to-r from-rose-600 via-pink-600 to-rose-800 bg-clip-text text-transparent font-cursive font-normal text-6xl sm:text-8xl md:text-9xl block sm:inline mt-2 sm:mt-0">
+                    Leonor
+                </span>
+            </h1>
+
+            <p class="mt-4 text-base sm:text-lg text-rose-900/80 max-w-xl font-light italic">
+                "To the most beautiful woman who turned my world around. Happy October 28th, my love!"
+            </p>
+
+            <!-- Hero Avatar Showcase with Floating Badges -->
+            <div class="relative mt-8 sm:mt-12 group">
+                <!-- Decorative Glow Background -->
+                <div class="absolute -inset-4 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition duration-700 animate-pulse-glow"></div>
+                
+                <!-- Hero Image Holder -->
+                <div class="relative w-48 h-48 sm:w-64 sm:h-64 rounded-full p-2 bg-gradient-to-tr from-rose-400 via-pink-200 to-goldAccent shadow-2xl">
+                    <img id="img-hero" src="https://placehold.co/400x400/ffe4e6/881337?text=Leonor+✨" alt="Leonor Hero" class="w-full h-full object-cover rounded-full shadow-inner cursor-pointer hover:scale-105 transition duration-500" onclick="openLightbox(0)">
+                </div>
+
+                <!-- Floating Interactive Badges -->
+                <div class="absolute -top-2 -left-4 sm:-left-8 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl shadow-lg border border-rose-200 animate-float text-xs sm:text-sm font-semibold text-rose-700 flex items-center gap-1.5">
+                    <span>👑</span> My Queen
+                </div>
+                <div class="absolute bottom-2 -right-4 sm:-right-8 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl shadow-lg border border-rose-200 animate-float style-delay-1 text-xs sm:text-sm font-semibold text-rose-700 flex items-center gap-1.5" style="animation-delay: 1.5s;">
+                    <span>✨</span> Oct 28th
+                </div>
+            </div>
+
+            <!-- Interactive Love Heart Button & Explosions -->
+            <div class="mt-10 flex flex-col items-center">
+                <button onclick="triggerLoveExplosion(event)" class="relative group px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white rounded-full font-bold shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center gap-3">
+                    <i class="fa-solid fa-heart text-2xl text-rose-200 group-hover:scale-125 transition duration-300"></i>
+                    <span class="text-lg">Send Love Hugs</span>
+                    <span id="loveCounter" class="bg-white/20 px-2.5 py-0.5 rounded-full text-xs font-semibold">0</span>
+                </button>
+                <span class="text-xs text-rose-600/70 mt-2 font-medium">Tap to send floating hearts! 💕</span>
+            </div>
+        </section>
+
+        <!-- MILESTONES & TIME TOGETHER COUNTERS -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <!-- Birthday Countdown Card -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-6 -bottom-6 text-rose-100 text-9xl pointer-events-none font-serif select-none">🎂</div>
+                <div>
+                    <div class="flex items-center gap-2 text-rose-600 font-bold text-sm tracking-wider uppercase mb-1">
+                        <i class="fa-solid fa-cake-candles"></i> Birthday Countdown
+                    </div>
+                    <h3 class="text-2xl font-serif font-extrabold text-slate-800">October 28th Celebration</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Counting down to the day the most beautiful woman was born!</p>
+                </div>
+
+                <div id="countdownGrid" class="grid grid-cols-4 gap-2 sm:gap-3 text-center my-6">
+                    <div class="bg-rose-50/80 border border-rose-200/60 p-3 rounded-2xl">
+                        <span id="bday-days" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Days</span>
+                    </div>
+                    <div class="bg-rose-50/80 border border-rose-200/60 p-3 rounded-2xl">
+                        <span id="bday-hours" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Hours</span>
+                    </div>
+                    <div class="bg-rose-50/80 border border-rose-200/60 p-3 rounded-2xl">
+                        <span id="bday-mins" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Mins</span>
+                    </div>
+                    <div class="bg-rose-50/80 border border-rose-200/60 p-3 rounded-2xl">
+                        <span id="bday-secs" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Secs</span>
+                    </div>
+                </div>
+
+                <div class="text-xs text-rose-800/80 font-medium bg-rose-100/60 p-3 rounded-xl border border-rose-200/50 text-center">
+                    ✨ "Today is the day that the world was blessed by your presence!" ✨
+                </div>
+            </div>
+
+            <!-- Time Together Live Counter Card -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-6 -bottom-6 text-rose-100 text-9xl pointer-events-none font-serif select-none">💖</div>
+                <div>
+                    <div class="flex items-center gap-2 text-rose-600 font-bold text-sm tracking-wider uppercase mb-1">
+                        <i class="fa-solid fa-infinity"></i> Post-Leonor Era
+                    </div>
+                    <h3 class="text-2xl font-serif font-extrabold text-slate-800">Time Together Live</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Since we started dating on <strong>August 24th, 2026</strong></p>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 sm:gap-3 text-center my-6">
+                    <div class="bg-pink-50/80 border border-pink-200/60 p-3 rounded-2xl">
+                        <span id="together-days" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Days</span>
+                    </div>
+                    <div class="bg-pink-50/80 border border-pink-200/60 p-3 rounded-2xl">
+                        <span id="together-hours" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Hours</span>
+                    </div>
+                    <div class="bg-pink-50/80 border border-pink-200/60 p-3 rounded-2xl">
+                        <span id="together-mins" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Mins</span>
+                    </div>
+                    <div class="bg-pink-50/80 border border-pink-200/60 p-3 rounded-2xl">
+                        <span id="together-secs" class="block text-2xl sm:text-3xl font-bold text-rose-700">00</span>
+                        <span class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase">Secs</span>
+                    </div>
+                </div>
+
+                <!-- Key Relationship Milestones Timeline -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="p-2.5 rounded-xl bg-white/70 border border-rose-200/70 flex items-center gap-2">
+                        <i class="fa-solid fa-sparkles text-amber-500 text-sm"></i>
+                        <div>
+                            <span class="block font-bold text-slate-700">First Met</span>
+                            <span class="text-slate-500">May 9th, 2026</span>
+                        </div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white/70 border border-rose-200/70 flex items-center gap-2">
+                        <i class="fa-solid fa-heart text-rose-500 text-sm"></i>
+                        <div>
+                            <span class="block font-bold text-slate-700">Started Dating</span>
+                            <span class="text-slate-500">August 24th, 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POLAROID MEMORY WALL SECTION -->
+        <section class="space-y-6">
+            <div class="text-center">
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-slate-900">Our Photo Snapshot Wall</h2>
+                <p class="text-slate-600 text-sm sm:text-base mt-1">Interactive polaroids capturing our sweetest memories</p>
+            </div>
+
+            <!-- Polaroid Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+                <!-- Polaroid 1 -->
+                <div class="polaroid bg-white p-4 pb-6 rounded-sm shadow-md border border-slate-200/60 transform -rotate-2 cursor-pointer" onclick="openLightbox(1)">
+                    <div class="aspect-square bg-slate-100 overflow-hidden mb-3">
+                        <img id="img-polaroid-1" src="https://placehold.co/400x400/ffe4e6/881337?text=Memory+1" class="w-full h-full object-cover" alt="Memory 1">
+                    </div>
+                    <p class="font-handwriting text-center text-xl text-rose-900 font-bold">First Day We Met ✨</p>
+                    <p class="text-center text-[11px] text-slate-400 mt-0.5">May 9th, 2026</p>
+                </div>
+
+                <!-- Polaroid 2 -->
+                <div class="polaroid bg-white p-4 pb-6 rounded-sm shadow-md border border-slate-200/60 transform rotate-3 cursor-pointer" onclick="openLightbox(2)">
+                    <div class="aspect-square bg-slate-100 overflow-hidden mb-3">
+                        <img id="img-polaroid-2" src="https://placehold.co/400x400/ffe4e6/881337?text=Memory+2" class="w-full h-full object-cover" alt="Memory 2">
+                    </div>
+                    <p class="font-handwriting text-center text-xl text-rose-900 font-bold">The 'Hum Day' 🌙</p>
+                    <p class="text-center text-[11px] text-slate-400 mt-0.5">The Night We Knew</p>
+                </div>
+
+                <!-- Polaroid 3 -->
+                <div class="polaroid bg-white p-4 pb-6 rounded-sm shadow-md border border-slate-200/60 transform -rotate-1 cursor-pointer" onclick="openLightbox(3)">
+                    <div class="aspect-square bg-slate-100 overflow-hidden mb-3">
+                        <img id="img-polaroid-3" src="https://placehold.co/400x400/ffe4e6/881337?text=Memory+3" class="w-full h-full object-cover" alt="Memory 3">
+                    </div>
+                    <p class="font-handwriting text-center text-xl text-rose-900 font-bold">Official Lovers 💖</p>
+                    <p class="text-center text-[11px] text-slate-400 mt-0.5">August 24th, 2026</p>
+                </div>
+
+                <!-- Polaroid 4 -->
+                <div class="polaroid bg-white p-4 pb-6 rounded-sm shadow-md border border-slate-200/60 transform rotate-2 cursor-pointer" onclick="openLightbox(4)">
+                    <div class="aspect-square bg-slate-100 overflow-hidden mb-3">
+                        <img id="img-polaroid-4" src="https://placehold.co/400x400/ffe4e6/881337?text=Memory+4" class="w-full h-full object-cover" alt="Memory 4">
+                    </div>
+                    <p class="font-handwriting text-center text-xl text-rose-900 font-bold">My Best Partner 👑</p>
+                    <p class="text-center text-[11px] text-slate-400 mt-0.5">Always & Forever</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROMANTIC STATIONARY LOVE LETTER WITH WAX SEAL ANIMATION -->
+        <section id="love-letter" class="scroll-mt-28 flex flex-col items-center">
+            <div class="text-center mb-8">
+                <span class="text-xs font-bold uppercase tracking-widest text-rose-600">Confession of My Soul</span>
+                <h2 class="font-serif text-3xl sm:text-5xl font-extrabold text-slate-900 mt-1">A Letter For My Life</h2>
+                <p class="text-slate-600 text-sm mt-1">Click the wax seal to unseal my heart's message</p>
+            </div>
+
+            <!-- Envelope Container -->
+            <div class="w-full max-w-2xl px-2">
+                <!-- Interactive Wax Seal Envelope Wrapper -->
+                <div id="envelopeWrapper" class="bg-rose-900/90 rounded-3xl p-6 sm:p-10 shadow-2xl relative border-2 border-amber-300/40 text-center transition-all duration-700">
+                    
+                    <!-- Sealed State Trigger Button -->
+                    <div id="sealedState" class="py-12 flex flex-col items-center justify-center space-y-4 cursor-pointer group" onclick="unsealLetter()">
+                        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400 flex items-center gap-0 justify-center shadow-xl border-4 border-amber-300 group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-stamp text-amber-950 text-3xl"></i>
+                        </div>
+                        <p class="font-serif text-amber-100 text-xl tracking-wide group-hover:text-amber-300 transition">Click Wax Seal to Open Letter</p>
+                        <p class="text-xs text-amber-200/60">Strictly for Leonor's eyes only 💌</p>
+                    </div>
+
+                    <!-- Unsealed Letter Stationary Content -->
+                    <div id="unsealedLetter" class="hidden text-left bg-[#FFFDF9] rounded-2xl p-6 sm:p-10 shadow-inner border border-amber-200 relative overflow-hidden">
+                        <!-- Decorative Parchment Texture Overlay -->
+                        <div class="absolute inset-0 bg-amber-500/5 pointer-events-none"></div>
+
+                        <!-- Top Ribbon Accent -->
+                        <div class="flex justify-between items-center border-b border-rose-200/80 pb-4 mb-6">
+                            <div class="font-handwriting text-2xl text-rose-800 font-bold">Dearest Leonor,</div>
+                            <div class="text-xs text-rose-400 font-serif">October 28th, 2026</div>
+                        </div>
+
+                        <!-- Exact Love Letter Text -->
+                        <div class="font-handwriting text-slate-800 text-xl sm:text-2xl leading-relaxed space-y-4 whitespace-pre-line tracking-wide">
+"amor da minha vida
+hmm how should i start this hmmm i still remember the first day we met the first talk we had it was a day i'd never forget we we're total strangers but now u mean the world for me we shared a lot of memory even tho we haven't met yet irl if i can divide my life into 2 parts there gonna be the pre leonor era and post leonor era i can't imagine my life without u i'm so grateful to have u and so blessed to love u and so thankfull that destiny lead us together i'll never forget the 'hum day' the night we knew that we liked each other i hope it was eariler tho :))) but i'm so grateful that u're a part of my life idm how much i'll write it won't be enough to express my love for u . today ocotber 28th the day that my good luck was born the day that world saw the birth of the most beautifeaul women today is the day that the world been blessed by ur presence by ur breathhs i feel so grateful that i breath the same air as u ur laughter ur smile ur face everthing abt u i love it all u just being here brighten my days u inspire me to try best to work so hard to keep going i never imagined that i'll met someone as kind as u thank u for being my partner my best friend my everything my dream?? i don't think cuz my dream can't imagine someone as great as u i promise to stand by u till my last breath and i'll always cherish the time we have together i wish i choosed litearture so ican express better but unfortuantley i'm just a brat who choose math ayay but one thing for sure i love u soooo much i love u with all my heart and more then my heart"
+                        </div>
+
+                        <!-- Sign off -->
+                        <div class="mt-8 pt-6 border-t border-rose-200/80 flex justify-between items-end">
+                            <span class="text-xs text-rose-500 font-sans font-medium">Forever Yours ❤️</span>
+                            <span class="font-cursive text-3xl sm:text-4xl text-rose-700">With all my heart</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE PHOTO GALLERY GRID (FULL 9 PHOTOS) -->
+        <section class="space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                <div>
+                    <h2 class="font-serif text-3xl font-bold text-slate-900">Complete Gallery</h2>
+                    <p class="text-slate-600 text-sm">Every snapshot of the girl who stole my heart</p>
+                </div>
+                <span class="text-xs text-rose-600 font-semibold bg-rose-100 px-3 py-1 rounded-full">Click any photo to enlarge</span>
+            </div>
+
+            <!-- Gallery Grid (9 Photos) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                <!-- Loop 0 through 8 for 9 images -->
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(0)">
+                    <img id="img-grid-0" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+1" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 1">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(1)">
+                    <img id="img-grid-1" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+2" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 2">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(2)">
+                    <img id="img-grid-2" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+3" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 3">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(3)">
+                    <img id="img-grid-3" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+4" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 4">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(4)">
+                    <img id="img-grid-4" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+5" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 5">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(5)">
+                    <img id="img-grid-5" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+6" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 6">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(6)">
+                    <img id="img-grid-6" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+7" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 7">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(7)">
+                    <img id="img-grid-7" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+8" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 8">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+
+                <div class="group relative aspect-square bg-slate-200 rounded-2xl overflow-hidden shadow-sm cursor-pointer border-2 border-white hover:border-rose-400 transition" onclick="openLightbox(8)">
+                    <img id="img-grid-8" src="https://placehold.co/400x400/ffe4e6/881337?text=Photo+9" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery Photo 9">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-medium"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Photo</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BACKUP IMAGE CONTROL PANEL / LOCAL UPLOADER TOOL -->
+        <section class="glass-card rounded-3xl p-6 sm:p-8 border border-rose-200/80 shadow-lg">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold">
+                    <i class="fa-solid fa-images"></i>
+                </div>
+                <div>
+                    <h3 class="font-serif font-bold text-lg text-slate-800">Photo Customizer / Backup Manager</h3>
+                    <p class="text-xs text-slate-500">Swap or upload new images anytime right from your browser</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                <div class="text-xs text-slate-600 leading-relaxed bg-white/60 p-4 rounded-2xl border border-rose-100">
+                    <p class="font-semibold text-rose-800 mb-1">✨ How to swap photos:</p>
+                    <p>Select any photo slot below to replace it with your own local image file. Changes render instantly across all Polaroids, Gallery Grid, and Showcase elements!</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block text-xs font-semibold text-slate-700">Replace Photo Slot:</label>
+                    <div class="flex gap-2">
+                        <select id="slotSelector" class="w-1/2 text-xs p-2.5 rounded-xl border border-rose-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-rose-400">
+                            <option value="0">Photo Slot 1 (Hero & Polaroid 1)</option>
+                            <option value="1">Photo Slot 2 (Polaroid 2)</option>
+                            <option value="2">Photo Slot 3 (Polaroid 3)</option>
+                            <option value="3">Photo Slot 4 (Polaroid 4)</option>
+                            <option value="4">Photo Slot 5</option>
+                            <option value="5">Photo Slot 6</option>
+                            <option value="6">Photo Slot 7</option>
+                            <option value="7">Photo Slot 8</option>
+                            <option value="8">Photo Slot 9</option>
+                        </select>
+                        <label class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer text-center shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-upload"></i> Upload Image
+                            <input type="file" id="localFileInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-8 text-center text-xs text-rose-900/60 font-medium">
+        <p>Crafted with endless love for Leonor's 2026 Birthday Celebration 💕</p>
+    </footer>
+
+    <!-- LIGHTBOX MODAL VIEWER -->
+    <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <!-- Close Button -->
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white text-3xl hover:text-rose-400 transition z-50 p-2">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <!-- Previous Button -->
+        <button onclick="prevLightboxImage()" class="absolute left-4 sm:left-8 text-white text-2xl sm:text-4xl hover:text-rose-400 transition p-3">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <!-- Next Button -->
+        <button onclick="nextLightboxImage()" class="absolute right-4 sm:right-8 text-white text-2xl sm:text-4xl hover:text-rose-400 transition p-3">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <!-- Lightbox Content Holder -->
+        <div class="max-w-4xl max-h-[85vh] flex flex-col items-center">
+            <img id="lightboxImg" src="" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl border border-white/20" alt="Enlarged photo">
+            <div id="lightboxCaption" class="mt-4 text-white text-center font-serif text-lg"></div>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENT (Romantic Melody Synthesizer Fallback / Web Audio API) -->
+    <script>
+        // Array holding 9 images (Base64 or fallback renderable URLs)
+        const photoData = [
+            "https://placehold.co/600x600/ffe4e6/881337?text=Leonor+Hero",
+            "https://placehold.co/600x600/ffe4e6/881337?text=First+Day+Met",
+            "https://placehold.co/600x600/ffe4e6/881337?text=The+Hum+Day",
+            "https://placehold.co/600x600/ffe4e6/881337?text=Started+Dating",
+            "https://placehold.co/600x600/ffe4e6/881337?text=Best+Friend",
+            "https://placehold.co/600x600/ffe4e6/881337?text=Sweet+Smile",
+            "https://placehold.co/600x600/ffe4e6/881337?text=Beautiful+Laughter",
+            "https://placehold.co/600x600/ffe4e6/881337?text=Precious+Moments",
+            "https://placehold.co/600x600/ffe4e6/881337?text=Forever+Together"
+        ];
+
+        let currentLightboxIndex = 0;
+        let loveTapCount = 0;
+
+        // Render photos across the webpage
+        function updateAllPhotos() {
+            // Hero
+            const heroImg = document.getElementById('img-hero');
+            if (heroImg) heroImg.src = photoData[0];
+
+            // Polaroids (1 - 4)
+            for (let i = 1; i <= 4; i++) {
+                const pImg = document.getElementById(`img-polaroid-${i}`);
+                if (pImg) pImg.src = photoData[i - 1];
+            }
+
+            // Gallery Grid (0 - 8)
+            for (let i = 0; i < 9; i++) {
+                const gImg = document.getElementById(`img-grid-${i}`);
+                if (gImg) gImg.src = photoData[i];
+            }
+        }
+
+        // Handle Image Upload via Local Backup Control Panel
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const slotIndex = parseInt(document.getElementById('slotSelector').value, 10);
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                photoData[slotIndex] = e.target.result;
+                updateAllPhotos();
+                // If Lightbox is open, update lightbox too
+                if (!document.getElementById('lightboxModal').classList.contains('hidden')) {
+                    document.getElementById('lightboxImg').src = photoData[currentLightboxIndex];
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Unseal Wax Envelope Animation
+        function unsealLetter() {
+            const sealedState = document.getElementById('sealedState');
+            const unsealedLetter = document.getElementById('unsealedLetter');
+            
+            // Trigger confetti burst
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            sealedState.classList.add('hidden');
+            unsealedLetter.classList.remove('hidden');
+            unsealedLetter.classList.add('animate-fade-in');
+        }
+
+        // Lightbox Functions
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            const lightbox = document.getElementById('lightboxModal');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const caption = document.getElementById('lightboxCaption');
+
+            lightboxImg.src = photoData[index];
+            caption.innerText = `Memory #${index + 1} for Leonor ✨`;
+            lightbox.classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden');
+        }
+
+        function prevLightboxImage() {
+            currentLightboxIndex = (currentLightboxIndex - 1 + photoData.length) % photoData.length;
+            document.getElementById('lightboxImg').src = photoData[currentLightboxIndex];
+            document.getElementById('lightboxCaption').innerText = `Memory #${currentLightboxIndex + 1} for Leonor ✨`;
+        }
+
+        function nextLightboxImage() {
+            currentLightboxIndex = (currentLightboxIndex + 1) % photoData.length;
+            document.getElementById('lightboxImg').src = photoData[currentLightboxIndex];
+            document.getElementById('lightboxCaption').innerText = `Memory #${currentLightboxIndex + 1} for Leonor ✨`;
+        }
+
+        // Floating Heart Explosion Effect
+        function triggerLoveExplosion(event) {
+            loveTapCount++;
+            document.getElementById('loveCounter').innerText = loveTapCount;
+
+            // Confetti Hearts
+            confetti({
+                particleCount: 30,
+                scalar: 1.2,
+                shapes: ['heart'],
+                colors: ['#f43f5e', '#ec4899', '#fda4af'],
+                origin: { x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight }
+            });
+        }
+
+        // Countdown & Time Together Timers
+        function updateTimers() {
+            const now = new Date();
+
+            // 1. Birthday Timer Target: Oct 28
+            const currentYear = now.getFullYear();
+            let bdayTarget = new Date(currentYear, 9, 28, 0, 0, 0); // Month is 0-indexed (9 = Oct)
+
+            // If Oct 28 has already passed this year, point to next year
+            if (now > bdayTarget && now.getDate() !== 28) {
+                bdayTarget = new Date(currentYear + 1, 9, 28, 0, 0, 0);
+            }
+
+            const isTodayBirthday = (now.getMonth() === 9 && now.getDate() === 28);
+
+            if (isTodayBirthday) {
+                document.getElementById('badgeText').innerText = "🎉 IT'S LEONOR'S BIRTHDAY TODAY! HAPPY BIRTHDAY! 🎂";
+                document.getElementById('celebrationBadge').classList.add('bg-amber-100', 'border-amber-300', 'text-amber-800');
+            }
+
+            const diffBday = Math.max(0, bdayTarget - now);
+            const bDays = Math.floor(diffBday / (1000 * 60 * 60 * 24));
+            const bHours = Math.floor((diffBday / (1000 * 60 * 60)) % 24);
+            const bMins = Math.floor((diffBday / (1000 * 60)) % 60);
+            const bSecs = Math.floor((diffBday / 1000) % 60);
+
+            document.getElementById('bday-days').innerText = String(bDays).padStart(2, '0');
+            document.getElementById('bday-hours').innerText = String(bHours).padStart(2, '0');
+            document.getElementById('bday-mins').innerText = String(bMins).padStart(2, '0');
+            document.getElementById('bday-secs').innerText = String(bSecs).padStart(2, '0');
+
+            // 2. Time Together Counter (Started Dating: August 24th, 2026)
+            const startDate = new Date(2026, 7, 24, 0, 0, 0); // Aug 24, 2026
+            const diffTogether = Math.max(0, now - startDate);
+
+            const tDays = Math.floor(diffTogether / (1000 * 60 * 60 * 24));
+            const tHours = Math.floor((diffTogether / (1000 * 60 * 60)) % 24);
+            const tMins = Math.floor((diffTogether / (1000 * 60)) % 60);
+            const tSecs = Math.floor((diffTogether / 1000) % 60);
+
+            document.getElementById('together-days').innerText = String(tDays).padStart(2, '0');
+            document.getElementById('together-hours').innerText = String(tHours).padStart(2, '0');
+            document.getElementById('together-mins').innerText = String(tMins).padStart(2, '0');
+            document.getElementById('together-secs').innerText = String(tSecs).padStart(2, '0');
+        }
+
+        // Web Audio Synthesizer Melody
+        let audioContext = null;
+        let isPlayingMelody = false;
+        let melodyInterval = null;
+
+        function toggleAudio() {
+            const btnText = document.getElementById('audioText');
+            const btnIcon = document.getElementById('audioIcon');
+
+            if (!isPlayingMelody) {
+                playRomanticMelody();
+                isPlayingMelody = true;
+                btnText.innerText = 'Pause Melody';
+                btnIcon.className = 'fa-solid fa-pause';
+            } else {
+                stopRomanticMelody();
+                isPlayingMelody = false;
+                btnText.innerText = 'Play Melody';
+                btnIcon.className = 'fa-solid fa-music';
+            }
+        }
+
+        function playRomanticMelody() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]; // C major notes
+            let index = 0;
+
+            melodyInterval = setInterval(() => {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(notes[index % notes.length], audioContext.currentTime);
+
+                gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1.2);
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.start();
+                osc.stop(audioContext.currentTime + 1.2);
+
+                index = (index + Math.floor(Math.random() * 3) + 1) % notes.length;
+            }, 600);
+        }
+
+        function stopRomanticMelody() {
+            if (melodyInterval) {
+                clearInterval(melodyInterval);
+                melodyInterval = null;
+            }
+        }
+
+        // Particle Background System (Hearts & Sparkles)
+        function initBackgroundParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = (canvas.width = window.innerWidth);
+            let height = (canvas.height = window.innerHeight);
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = Array.from({ length: 25 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 12 + 8,
+                speedY: Math.random() * 0.8 + 0.3,
+                opacity: Math.random() * 0.5 + 0.2,
+                swing: Math.random() * 2
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                particles.forEach((p) => {
+                    p.y -= p.speedY;
+                    p.x += Math.sin(p.y * 0.02) * 0.5;
+
+                    if (p.y < -20) {
+                        p.y = height + 20;
+                        p.x = Math.random() * width;
+                    }
+
+                    ctx.fillStyle = `rgba(244, 63, 94, ${p.opacity})`;
+                    ctx.font = `${p.size}px sans-serif`;
+                    ctx.fillText('💖', p.x, p.y);
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        // Initialize Everything on Load
+        window.onload = function() {
+            updateAllPhotos();
+            updateTimers();
+            setInterval(updateTimers, 1000);
+            initBackgroundParticles();
+        };
+    </script>
+</body>
+</html>
